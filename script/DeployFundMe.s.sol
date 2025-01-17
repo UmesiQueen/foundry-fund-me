@@ -7,16 +7,22 @@ import {FundMe} from "../src/FundMe.sol";
 import {HelperConfig} from "./HelperConfig.s.sol";
 
 contract DeployFundMe is Script {
-    function run() external returns (FundMe) {
-        // Any code before the startBroadcast is not a real tx, so gas is spent
+    function deployContract() public returns (FundMe, HelperConfig) {
+        // Any code before the startBroadcast is not a real tx
         HelperConfig helperConfig = new HelperConfig();
-        address ethUsdPriceFeed = helperConfig.activeNetworkConfig();
+        address priceFeed = helperConfig
+            .getConfigByChainId(block.chainid)
+            .priceFeed;
 
         //After startBroadcast - Real tx
         vm.startBroadcast();
-        FundMe fundMe = new FundMe(ethUsdPriceFeed);
+        FundMe fundMe = new FundMe(priceFeed);
         vm.stopBroadcast();
 
-        return fundMe;
+        return (fundMe, helperConfig);
+    }
+
+    function run() external returns (FundMe, HelperConfig) {
+        return deployContract();
     }
 }
