@@ -3,8 +3,8 @@
 pragma solidity ^0.8.18;
 
 import {Test, console} from "forge-std/Test.sol";
-import {FundMe} from "../src/FundMe.sol";
-import {DeployFundMe} from "../script/DeployFundMe.s.sol";
+import {FundMe} from "../../src/FundMe.sol";
+import {DeployFundMe} from "../../script/DeployFundMe.s.sol";
 
 contract FundMeTest is Test {
     FundMe fundMe;
@@ -16,8 +16,8 @@ contract FundMeTest is Test {
 
     //setUp always runs first
     function setUp() external {
-        DeployFundMe deployFundMe = new DeployFundMe();
-        fundMe = deployFundMe.run();
+        DeployFundMe deploy = new DeployFundMe();
+        (fundMe, ) = deploy.deployContract();
         vm.deal(USER, STARTING_BALANCE); // give prank user eth as balance is 0 by default
     }
 
@@ -83,15 +83,10 @@ contract FundMeTest is Test {
         uint256 endingOwnerBalance = fundMe.getOwner().balance;
         uint256 endingFundMeBalance = address(fundMe).balance;
         assertEq(endingFundMeBalance, 0);
-        console.log(
-            startingOwnerBalance,
-            startingFundMeBalance,
-            endingFundMeBalance
+        assertEq(
+            startingFundMeBalance + startingOwnerBalance,
+            endingOwnerBalance // + gasUsed
         );
-        // assertEq(
-        //     startingOwnerBalance + startingFundMeBalance,
-        //     endingFundMeBalance
-        // );
     }
 
     function testWithdrawFromMultiplyFunders() public funded {
