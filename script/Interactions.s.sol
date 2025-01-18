@@ -20,9 +20,7 @@ contract FundFundMe is Script {
             "FundMe",
             block.chainid
         );
-        vm.startBroadcast();
         fundFundMe(mostRecentlyDeployed);
-        vm.stopBroadcast();
     }
 }
 
@@ -40,8 +38,6 @@ contract WithdrawFundMe is Script {
             "FundMe",
             block.chainid
         );
-        vm.startBroadcast();
         withdrawFundMe(mostRecentlyDeployed);
-        vm.stopBroadcast();
     }
 }
